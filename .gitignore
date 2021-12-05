@@ -366,4 +366,4 @@ FodyWeavers.xsd
 */*.vcxproj
 */*.filters
 */*.user
-*.ysu_c++.sln
+*.sln
