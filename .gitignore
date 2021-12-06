@@ -367,3 +367,4 @@ FodyWeavers.xsd
 */*.filters
 */*.user
 *.sln
+*/main.cpp
