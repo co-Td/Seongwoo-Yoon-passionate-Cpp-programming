@@ -47,3 +47,94 @@ ___약의 복용은 반드시 재채기 약, 콧물 약, 코막힘 약 순서대
 캡슐화는 감싸는 개념이다. 그런데, 감싸려면 안전하게 감싸야 한다.  
 다시말해 멤버변수가 보이지 않게 정보를 은닉해서 감싸는 것이 좋다. 그래서 캡슐화는 기본적으로 정보은닉을 포함하는 개념이라고도 이야기한다.
 
+
+## 5. 생성자와 소멸자
+### 1. 생성자
+- 객체의 생성과 동시에 초기화를 할 수 있다.
+- 객체 생성시 딱 한 번 호출된다.
+- 생성자도 함수의 일종이라 ___오버로딩이___ 가능하다.
+- 생성자도 함수의 일종이니 ___매개변수에 '디폴트 값'을 설정할 수 있다.___  
+- 생성자가 클래스 내 없는경우, default constructor가 자동으로 삽입되어 호출된다. 따라서 생성자는 반드시 호출된다.
+
+### 2. 멤버 이니셜라이저를 이용한 멤버 초기화
+- 클래스 객체를 생성하면서, 클래스 내 선언된 멤버 객체도 초기화할 수 있는 기능을 제공한다.  
+- 객체 뿐 아니라, const, 참조자도 초기화 가능하다. 즉 멤버 변수로 const와 참조자 선언이 가능해진다.
+
+- 멤버 이니셜라이저 예시
+```C++
+class Rectangle {
+  private:
+    Point upLeft;
+    Point lowRight;
+  public:
+    Rectangle(const int &x1, const int &y1, const int &x2, const int &y2);
+    void ShowRecInfo() const;
+}
+
+Rectangle::Rectangle(const int &x1, const int &y1, const int &x2, const int &y2)
+  :upLeft(x1, y1), lowRight(x2, y2) // 멤버 이니셜라이저 부분
+{
+  // Constructor body
+}
+```
+
+### 3. 객체 생성과정 정리
+1. 메모리 공간의 할당
+2. 이니셜라이저를 통한 멤버변수(객체)의 초기화
+3. 생성자의 몸체부분 실행
+
+### 4. 디폴트 생성자(Default Constructor)
+___객체가 되기 위해서는 반드시 하나의 생성자가 호출되어야 한다.___   
+위 내용을 만족하기 위해 생성자가 없는 경우 자동으로 삽입되는 생성자가 디폴트 생성자다.
+
+- 디폴트 생성자 예시
+```C++
+class AAA{
+  private:
+    int num;
+  public:
+    AAA() {}
+    int GetNum { return num; }
+}
+
+int main(void){
+  AAA * ptr = new AAA;
+  AAA * ptr = (AAA)malloc(sizeof(AAA));
+};
+```
+
+### 5. 생성자 불일치
+위에서 설명한 디폴트 생성자는 선언된 생성자가 없는 경우에만 삽입된다.  
+생성자 불일치는 생성자에 필요한 파라미터 형식이 일치하지 않는경우 발생한다.
+
+```C++
+class SoSimple{
+  private:
+    int num;
+  public:
+    SoSimple(int n) : num(n) { }
+};
+
+int main(void){
+  SoSimple simObj1(10);                 // (O)
+  SoSimple * simPtr1 = new SoSimple(2); // (O)
+  SoSimple simObj2;                     // (X)
+  SoSimple * simPtr2 = new SoSimple;    // (X)
+}
+```
+
+### 6. private 생성자
+클래스 내부에 public이 아닌, private으로 생성자를 선언할 수 있다.  
+외부에서 접근할 순 없지만, ___클래스 내부에서만 객체를 생성___ 하려 할 때 사용된다.  
+
+- 예시
+```C++
+class SoSimple{
+  private:
+    int num;
+    char ch;
+  public:
+    SoSimple(int n) : num(n) { }
+  private:
+    SoSimple(char c) : ch(a) {} // private 생성자
+};
