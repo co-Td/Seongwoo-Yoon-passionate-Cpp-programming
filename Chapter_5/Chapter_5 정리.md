@@ -111,3 +111,74 @@ ___묵시적 변환이 좋은 것만은 아니다.___
 묵시적 변환이 많이 발생하는 코드일수록 ___코드의 결과를 예측하기가 어려워지기 때문이다.___  
 따라서 키워드 explicit은 코드의 명확함을 더하기 위해서 자주 사용되는 키워드 중 하나이다.  
 
+
+___복사 생성자의 매개변수는 반드시 참조형이어야 하는가?___   
+복사 생성자의 매개변수 const는 필수가 아니다. 그러나 ___참조형의 선언을 의미하는 &는 반드시___  삽입해야 한다.  
+___&선언이 없다면, 복사 생성자의 호출은 무한루프에 빠져버린다.___  
+다행히 C++ 컴파일러는 &선언이 없다면, 컴파일 에러를 발생시킨다.   
+
+
+### 3. 깊은 복사와 얕은 복사  
+디폴트 복사 생성자는 멤버 대 멤버의 복사를 진행한다. 이러한 방식의 복사를 가리켜 ___얕은 복사(shallow copy)___ 라 한다.   
+이는 멤버변수가 힙의 메모리 공간을 참조하는 경우에 문제가 된다.  
+
+## 1. 디폴트 복사 생성자의 문제점
+```C++
+#include <iostream>
+#include <cstring>
+
+class Person{
+private:
+	char * name;
+	int age;
+public:
+	Person(char * myName, int myAge)
+	{
+		int len = strlen(myName) + 1;
+		name = new char[len];
+		strcpy(name, myName);
+		age = myAge;
+	}
+	
+	void ShowPersonInfo() const
+	{
+		std::cout << "이름: " << name << std::endl;
+		std::cout << "나이: " << age << std::endl;
+	}
+	
+	~Person()
+	{
+		delete []name;
+		std::cout << "called destructor!" << std::endl;
+	}
+};
+
+int main(void)
+{
+	Person man1("Lee dong woo", 29);
+	Person man2 = man1;
+	man1.ShowPersonInfo();
+	man2.ShowPersonInfo();
+	return 0;
+}
+
+/*
+결과:
+이름: Lee dong woo
+나이: 29
+이름: Lee dong woo
+나이: 29
+called destructor! // return을 통해 프로그램이 종료되었으나, 소멸자에 선언된 called destructor! 가 한번만 출력되었다.
+*/
+```
+
+위 소스의 결과에서 "called desctructor!"가 한 번만 출력된 이유는,  
+___얕은 복사___ 로 멤버 대 멤버 복사가 이뤄졌기 때문이다.  
+man1의 객체 name은 힙 메모리의 "called destructor!"를 포인터 참조하고 있으며,  
+man2의 객체 name도 얕은 복사로, 힙 메모리의 "called destructor!"를 포인터 참조하고 있다.  
+따라서 소멸자의 delete []name;는 이미 메모리가 해제된 상태라 다시 해제할 수 없어서 "called destructor!"가 한 번만 출력된것이다.   
+
+즉, 얕은 참조는 단순한 멤버 대 멤버의 복사가 발생하므로, 포인터 참조는 포인터 참조를 그대로 복사해  
+하나의 데이터를 두 포인터가 참조하는 꼴을 만들어버린다.  
+
+
