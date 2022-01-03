@@ -213,3 +213,37 @@ public:
 
 위 세 케이스의 공통점은 ___객체를 새로 생성해야 한다. 단, 생성과 동시에 동일한 자료형의 객체로 초기화해야 한다.___ 는 것이다.  
 
+
+### 2. 메모리 공간의 할당과 초기화가 동시에 일어나는 상황  
+- case 1:
+```C++
+int num1 = num2;
+```
+
+- case 2:
+```C++
+int SimpleFunc(int n)
+{
+	//
+}
+int main(void)
+{
+	int num = 10;
+	SimpleFunc(num); 	// 호출되는 순간 매개변수 n이 할당과 동시에 초기화
+}
+```
+
+- case 3:
+```C++
+int SimpleFunc(int n)
+{
+	//return n;	// 반환하는 순간 메모리 공간이 할당되면서 동시에 초기화
+}
+int main(void)
+{
+	int num = 10;
+	std::cout << SimpleFunc(num) << std::endl; 
+}
+```
+case 3의 경우, 값을 반환하면 반환된 값은 별도로 메모리 공간이 할당되어서 저장이 된다. 따라서 호출과 동시에 초기화 되는 종류 중 하나이다.  
+cout에 의해 출력이 되려면, 그 값이 메모리에 있어야 하고, 참조가 가능해야 한다.  
